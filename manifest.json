@@ -1,1 +1,35 @@
-{"name":"JSON Editor","version":"1.1","description":"Simple Json Editor","manifest_version":3,"author":"raj","permissions":["tabs","scripting"],"background":{"service_worker":"background.js"},"action":{"default_icon":"img/16.png"},"content_scripts":[{"matches":["http://*.github.com/*","https://*.github.com/*"],"js":["insert.js"],"run_at":"document_end"}],"icons":{"16":"img/16.png","32":"img/32.png","48":"img/48.png","128":"img/128.png"}}
+{
+  "name": "JSON Editor",
+  "version": "1.1",
+  "description": "Simple Json Editor",
+  "manifest_version": 3,
+  "author": "rishi",
+  "permissions": [
+    "tabs",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_icon": "img/16.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*.github.com/*",
+        "https://*.github.com/*"
+      ],
+      "js": [
+        "insert.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "icons": {
+    "16": "img/16.png",
+    "32": "img/32.png",
+    "48": "img/48.png",
+    "128": "img/128.png"
+  }
+}
