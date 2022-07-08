@@ -3,7 +3,7 @@
   "version": "1.1",
   "description": "Simple Json Editor",
   "manifest_version": 3,
-  "author": "test",
+  "author": "rishi",
   "permissions": [
     "tabs",
     "scripting"
