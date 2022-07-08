@@ -1,6 +1,6 @@
 
 
-(function(){
+(function () {
     var button = document.createElement("button")
 
     button.innerText = "Edit JSON"
@@ -13,14 +13,14 @@
 
 
 
-    button.onclick = function() {
+    button.onclick = function () {
         console.log('clicked!')
 
         const rawUrl = document
-        ?.getElementById('raw-url')
-        ?.getAttribute('data-permalink-href');
-        if(rawUrl){
-            chrome.runtime.sendMessage({message: 'ediJSONClicked', data: {rawUrl}}, () => {});
+            ?.getElementById('raw-url')
+            ?.getAttribute('data-permalink-href');
+        if (rawUrl) {
+            chrome.runtime.sendMessage({ message: 'ediJSONClicked', data: { rawUrl } }, () => { });
         }
     }
 
