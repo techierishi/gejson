@@ -12,3 +12,12 @@ chrome.action.onClicked.addListener(function (tab) {
         url: 'main.html'
     });
 });
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.message == 'ediJSONClicked') {
+        chrome.tabs.create({
+            active: true,
+            url: `main.html?rawUrl=${request.data.rawUrl}`
+        }, null);
+    }
+});

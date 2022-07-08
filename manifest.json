@@ -12,22 +12,22 @@
         "service_worker": "background.js"
     },
     "action": {
-        "default_icon": "img/16.png"
+        "default_icon": "res/img/16.png"
     },
     "content_scripts": [
         {
         "matches": [
-            "http://*.github.com/*",
-            "https://*.github.com/*"
+            "http://*.github.com/*.json",
+            "https://*.github.com/*.json"
         ],
         "js": ["insert.js"],
         "run_at": "document_end"
         }
     ],
     "icons": {
-        "16": "img/16.png",
-        "32": "img/32.png",
-        "48": "img/48.png",
-        "128": "img/128.png"
+        "16": "res/img/16.png",
+        "32": "res/img/32.png",
+        "48": "res/img/48.png",
+        "128": "res/img/128.png"
     }
 }
