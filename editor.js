@@ -6,6 +6,7 @@ const BASE_URL = 'https://api.github.com/repos'
 let jsonViewer = null
 let json = {}
 let pathDetails = {}
+let settings = {}
 
 document.getElementById("saveSettings").addEventListener("click", saveSettings)
 document.getElementById("saveJSON").addEventListener("click", saveJSON)
@@ -34,14 +35,15 @@ function saveSettings() {
         gravity: "bottom",
         position: "right"
     }).showToast();
+
+    setTimeout(()=>{
+        window.location.reload();
+    }, 1000);
+    
 }
 
-function showSettings() {
-    const ghToken = localStorage.getItem("ghToken")
-    const ghName = localStorage.getItem("ghName")
-    const ghEmail = localStorage.getItem("ghEmail")
-    const ghCommitMessage = localStorage.getItem("ghCommitMessage")
-
+function fillSettings() {
+    const {ghToken, ghName, ghEmail, ghCommitMessage} = settings
     if (ghToken) {
         const ghTokenEl = document.getElementById("ghToken")
         ghTokenEl.value = ghToken
@@ -61,12 +63,11 @@ function showSettings() {
         const ghCommitMessageEl = document.getElementById("ghCommitMessage")
         ghCommitMessageEl.value = ghCommitMessage
     }
-
-
 }
 
 async function saveJSON() {
     console.log("Saving JSON...")
+    getSettings()
 
     Toastify({
         text: "Saving...",
@@ -75,29 +76,36 @@ async function saveJSON() {
         position: "right"
     }).showToast();
 
-    const ghToken = localStorage.getItem("ghToken")
-    const ghName = localStorage.getItem("ghName")
-    const ghEmail = localStorage.getItem("ghEmail")
-    const ghCommitMessage = localStorage.getItem("ghCommitMessage")
+    const {ghToken, ghName, ghEmail, ghCommitMessage} = settings
 
     const jsonToSave = jsonViewer?.get()
     console.log('jsonToSave', jsonToSave)
     const b64Data = btoa(JSON.stringify(jsonToSave, null, 2))
 
-    await fetch(`${BASE_URL}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}`, {
-        body: `{ 
-            "message": "${ghCommitMessage}", 
-            "committer": { "name": "${ghName}", "email": "${ghEmail}" }, 
-            "sha": "${pathDetails.sha}", 
-            "content": "${b64Data}" }
-        `,
-        headers: {
-            Accept: "application/vnd.github+json",
-            Authorization: `token ${ghToken}`,
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        method: "PUT"
-    });
+    try {
+        await fetch(`${BASE_URL}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}`, {
+            body: `{ 
+                "message": "${ghCommitMessage}", 
+                "committer": { "name": "${ghName}", "email": "${ghEmail}" }, 
+                "sha": "${pathDetails.sha}", 
+                "content": "${b64Data}" }
+            `,
+            headers: {
+                Accept: "application/vnd.github+json",
+                Authorization: `token ${ghToken}`,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            method: "PUT"
+        });
+    } catch (error) {
+        Toastify({
+            text: `Error: ${error.message} `,
+            duration: 3000,
+            gravity: "bottom",
+            position: "right"
+        }).showToast();
+    }
+
     Toastify({
         text: "Saved...",
         duration: 3000,
@@ -106,10 +114,29 @@ async function saveJSON() {
     }).showToast();
 }
 
+function getSettings() {
+    const ghToken = localStorage.getItem("ghToken")
+    const ghName = localStorage.getItem("ghName")
+    const ghEmail = localStorage.getItem("ghEmail")
+    const ghCommitMessage = localStorage.getItem("ghCommitMessage")
+    settings = { ghToken, ghName, ghEmail, ghCommitMessage }
+
+    if (!ghToken) {
+        Toastify({
+            text: "Error: Please save settings...",
+            duration: 3000,
+            gravity: "bottom",
+            position: "right"
+        }).showToast();
+    }
+
+    return settings
+}
+
 async function loadEditor() {
     try {
-        showSettings();
-        const ghToken = localStorage.getItem("ghToken")
+        getSettings();
+        fillSettings();
 
         let params = (new URL(document.location)).searchParams
         let rawUrl = params.get("rawUrl")
@@ -124,7 +151,7 @@ async function loadEditor() {
         const getFileRes = await fetch(`${BASE_URL}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}`, {
             headers: {
                 Accept: "application/vnd.github+json",
-                Authorization: `token ${ghToken}`
+                Authorization: `token ${settings?.ghToken}`
             }
         })
         const fileRes = await getFileRes.json()
@@ -133,6 +160,12 @@ async function loadEditor() {
 
     } catch (error) {
         json = {}
+        Toastify({
+            text: `Error: ${error.message} `,
+            duration: 3000,
+            gravity: "bottom",
+            position: "right"
+        }).showToast();
     }
     const viewerOptions = {
         mode: 'view',
