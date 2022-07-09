@@ -16,12 +16,14 @@
     },
     "content_scripts": [
         {
-        "matches": [
-            "http://*.github.com/*.json",
-            "https://*.github.com/*.json"
-        ],
-        "js": ["insert.js"],
-        "run_at": "document_end"
+            "matches": [
+                "http://*.github.com/*.json",
+                "https://*.github.com/*.json"
+            ],
+            "js": [
+                "insert.js"
+            ],
+            "run_at": "document_end"
         }
     ],
     "icons": {

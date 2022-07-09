@@ -27,6 +27,13 @@ function saveSettings() {
     const ghCommitMessageEl = document.getElementById("ghCommitMessage")
     const ghCommitMessageVal = ghCommitMessageEl.value
     localStorage.setItem("ghCommitMessage", ghCommitMessageVal)
+
+    Toastify({
+        text: "Settings Saved...",
+        duration: 3000,
+        gravity: "bottom",
+        position: "right"
+    }).showToast();
 }
 
 function showSettings() {
@@ -35,31 +42,39 @@ function showSettings() {
     const ghEmail = localStorage.getItem("ghEmail")
     const ghCommitMessage = localStorage.getItem("ghCommitMessage")
 
-    if(ghToken){
+    if (ghToken) {
         const ghTokenEl = document.getElementById("ghToken")
-        ghTokenEl.value = ghToken        
+        ghTokenEl.value = ghToken
     }
 
-    if(ghName){
+    if (ghName) {
         const ghNameEl = document.getElementById("ghName")
         ghNameEl.value = ghName
     }
 
-    if(ghEmail){
+    if (ghEmail) {
         const ghEmailEl = document.getElementById("ghEmail")
         ghEmailEl.value = ghEmail
     }
 
-    if(ghCommitMessage){
+    if (ghCommitMessage) {
         const ghCommitMessageEl = document.getElementById("ghCommitMessage")
         ghCommitMessageEl.value = ghCommitMessage
     }
-    
+
 
 }
 
 async function saveJSON() {
     console.log("Saving JSON...")
+
+    Toastify({
+        text: "Saving...",
+        duration: 3000,
+        gravity: "bottom",
+        position: "right"
+    }).showToast();
+
     const ghToken = localStorage.getItem("ghToken")
     const ghName = localStorage.getItem("ghName")
     const ghEmail = localStorage.getItem("ghEmail")
@@ -82,7 +97,13 @@ async function saveJSON() {
             "Content-Type": "application/x-www-form-urlencoded"
         },
         method: "PUT"
-    })
+    });
+    Toastify({
+        text: "Saved...",
+        duration: 3000,
+        gravity: "bottom",
+        position: "right"
+    }).showToast();
 }
 
 async function loadEditor() {
@@ -107,7 +128,7 @@ async function loadEditor() {
             }
         })
         const fileRes = await getFileRes.json()
-        pathDetails.sha = fileRes.sha 
+        pathDetails.sha = fileRes.sha
         json = JSON.parse(atob(fileRes?.content))
 
     } catch (error) {
@@ -129,6 +150,8 @@ async function loadEditor() {
     }
     new JSONEditor(leftEditor, editorOptions, json)
     jsonViewer = new JSONEditor(rightViewer, viewerOptions, json)
+
+    document.getElementById('editor-loader').remove()
 }
 
 document.addEventListener('DOMContentLoaded', loadEditor, false)

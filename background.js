@@ -9,7 +9,7 @@ chrome.runtime.onInstalled.addListener((reason) => {
 
 chrome.action.onClicked.addListener(function (tab) {
     chrome.tabs.create({
-        url: 'main.html'
+        url: 'editor.html'
     });
 });
 
@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.message == 'ediJSONClicked') {
         chrome.tabs.create({
             active: true,
-            url: `main.html?rawUrl=${request.data.rawUrl}`
+            url: `editor.html?rawUrl=${request.data.rawUrl}`
         }, null);
     }
 });
