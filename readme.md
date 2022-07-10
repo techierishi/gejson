@@ -1,7 +1,7 @@
-# easy json editor
+# Github json editor
 ---
 
-Chrome doesn't have a quite good json editor for users to copy paste and verify json, this is why this project exists.
+Github doesn't have a quite good json editor for users edit and verify json, this is why this project exists.
 
 ```
 It works!
