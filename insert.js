@@ -28,7 +28,14 @@
         boxHeader?.appendChild(button)
     }
 
+    setInterval(()=>{
+        const geJsonButton = document.getElementById('gejson-button');
+        if(geJsonButton){
+            return false
+        }
+        createGeJsonButton();
+    }, 2000)
     
-    createGeJsonButton()
+    
 
 })()
