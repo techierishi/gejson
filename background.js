@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.message == 'ediJSONClicked') {
         chrome.tabs.create({
             active: true,
-            url: `editor.html?rawUrl=${request.data.rawUrl}`
+            url: `editor.html?ghHost=${request.data.ghHost}&&rawPath=${request.data.rawPath}`
         }, null);
     }
 });

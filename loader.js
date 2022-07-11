@@ -1,6 +1,6 @@
 class LoaderComponent extends HTMLElement {
     connectedCallback() {
-        console.log("loader-component isconnecting");
+        console.log("ghJsonEditor: loader-component isconnecting");
         this.innerHTML = `
             <div class="loader">
                 <svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -20,7 +20,7 @@ class LoaderComponent extends HTMLElement {
     }
   
     disconnectedCallback() {
-        console.log("loader-component is leaving");
+        console.log("ghJsonEditor: loader-component is leaving");
     }
   }
   

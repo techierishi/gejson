@@ -1,12 +1,17 @@
 const leftEditor = document.getElementById('editor')
 const rightViewer = document.getElementById('viewer')
 const STORE_KEY = 'easy-json-editor'
-const BASE_URL = 'https://api.github.com/repos'
+const BASE_URL = {
+    "github.com": 'https://api.github.com/repos',
+    "github.ibm.com": 'https://github.ibm.com/api/v3/repos'
+}
 
 let jsonViewer = null
 let json = {}
 let pathDetails = {}
 let settings = {}
+let ghHost = 'github.com'
+let rawPath = null
 
 document.getElementById("saveSettings").addEventListener("click", saveSettings)
 document.getElementById("saveJSON").addEventListener("click", saveJSON)
@@ -36,14 +41,14 @@ function saveSettings() {
         position: "right"
     }).showToast();
 
-    setTimeout(()=>{
+    setTimeout(() => {
         window.location.reload();
     }, 1000);
-    
+
 }
 
 function fillSettings() {
-    const {ghToken, ghName, ghEmail, ghCommitMessage} = settings
+    const { ghToken, ghName, ghEmail, ghCommitMessage } = settings
     if (ghToken) {
         const ghTokenEl = document.getElementById("ghToken")
         ghTokenEl.value = ghToken
@@ -66,7 +71,7 @@ function fillSettings() {
 }
 
 async function saveJSON() {
-    console.log("Saving JSON...")
+    console.log("ghJsonEditor: Saving JSON...")
     getSettings()
 
     Toastify({
@@ -76,14 +81,15 @@ async function saveJSON() {
         position: "right"
     }).showToast();
 
-    const {ghToken, ghName, ghEmail, ghCommitMessage} = settings
+    const { ghToken, ghName, ghEmail, ghCommitMessage } = settings
 
     const jsonToSave = jsonViewer?.get()
-    console.log('jsonToSave', jsonToSave)
     const b64Data = btoa(JSON.stringify(jsonToSave, null, 2))
 
     try {
-        await fetch(`${BASE_URL}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}`, {
+        const apiUrl = `${BASE_URL[ghHost]}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}`;
+        console.log('ghJsonEditor: saveJSON.apiUrl', apiUrl)
+        await fetch(apiUrl, {
             body: `{ 
                 "message": "${ghCommitMessage}", 
                 "committer": { "name": "${ghName}", "email": "${ghEmail}" }, 
@@ -118,10 +124,10 @@ function getSettings() {
     const ghToken = localStorage.getItem("ghToken")
     const ghName = localStorage.getItem("ghName")
     const ghEmail = localStorage.getItem("ghEmail")
-    const ghCommitMessage = localStorage.getItem("ghCommitMessage")
+    const ghCommitMessage = localStorage.getItem("ghCommitMessage") || 'Commit from chrome extension!'
     settings = { ghToken, ghName, ghEmail, ghCommitMessage }
 
-    if (!ghToken) {
+    if (!(ghToken && ghName && ghEmail)) {
         Toastify({
             text: "Error: Please save settings...",
             duration: 3000,
@@ -135,20 +141,9 @@ function getSettings() {
 
 async function loadEditor() {
     try {
-        getSettings();
-        fillSettings();
-
-        let params = (new URL(document.location)).searchParams
-        let rawUrl = params.get("rawUrl")
-        let splitPath = rawUrl.split('/');
-        const filePathArr = splitPath.slice(5, splitPath.length + 1)
-        const filePath = filePathArr.join('/')
-        pathDetails = {
-            org: splitPath[1],
-            repo: splitPath[2],
-            filePath
-        }
-        const getFileRes = await fetch(`${BASE_URL}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}`, {
+        const apiUrl = `${BASE_URL[ghHost]}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}`
+        console.log('ghJsonEditor: loadEditor.apiUrl', apiUrl)
+        const getFileRes = await fetch(apiUrl, {
             headers: {
                 Accept: "application/vnd.github+json",
                 Authorization: `token ${settings?.ghToken}`
@@ -174,7 +169,7 @@ async function loadEditor() {
         mode: 'tree',
         modes: ['code', 'form', 'text', 'tree', 'view', 'preview'], // allowed modes
         onModeChange: function (newMode, oldMode) {
-            console.log('Mode switched from', oldMode, 'to', newMode)
+            console.log('ghJsonEditor: Mode switched from', oldMode, 'to', newMode)
         },
         onChangeText: function (jsonString) {
             localStorage.setItem(STORE_KEY, jsonString)
@@ -187,4 +182,25 @@ async function loadEditor() {
     document.getElementById('editor-loader').remove()
 }
 
-document.addEventListener('DOMContentLoaded', loadEditor, false)
+function init() {
+    getSettings();
+    fillSettings();
+
+    let params = (new URL(document.location)).searchParams
+    rawPath = params.get("rawPath")
+    ghHost = params.get("ghHost")
+
+    console.log('ghJsonEditor: rawPath, ghHost', rawPath, ghHost)
+    let splitPath = rawPath.split('/');
+    const filePathArr = splitPath.slice(5, splitPath.length + 1)
+    const filePath = filePathArr.join('/')
+    pathDetails = {
+        org: splitPath[1],
+        repo: splitPath[2],
+        filePath
+    }
+
+    loadEditor()
+}
+
+document.addEventListener('DOMContentLoaded', init, false)

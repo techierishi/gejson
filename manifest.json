@@ -18,7 +18,9 @@
         {
             "matches": [
                 "http://*.github.com/*.json",
-                "https://*.github.com/*.json"
+                "https://*.github.com/*.json",
+                "http://*.github.ibm.com/*.json",
+                "https://*.github.ibm.com/*.json"
             ],
             "js": [
                 "insert.js"
