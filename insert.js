@@ -35,10 +35,16 @@
     }
 
 
-    const geJsonButton = document.getElementById('gejson-button')
-    if (geJsonButton) {
-        return false
+    const insertButton = () => {
+        const geJsonButton = document.getElementById('gejson-button')
+        if (geJsonButton) {
+            return false
+        }
+        createGeJsonButton()
     }
-    createGeJsonButton()
+
+    insertButton()
+
+    setInterval(insertButton, 3000)
 
 })()
