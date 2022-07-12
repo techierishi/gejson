@@ -1,6 +1,6 @@
 {
   "name": "gjeditor",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Github JSON editor.",
   "author": "techierishi <techierishi@gmail.com>",
   "scripts": {
