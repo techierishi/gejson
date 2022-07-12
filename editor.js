@@ -94,8 +94,9 @@ async function saveJSON() {
                 "message": "${ghCommitMessage}", 
                 "committer": { "name": "${ghName}", "email": "${ghEmail}" }, 
                 "sha": "${pathDetails.sha}", 
-                "content": "${b64Data}" }
-            `,
+                "branch": "${pathDetails.branch}",
+                "content": "${b64Data}" 
+            }`,
             headers: {
                 Accept: "application/vnd.github+json",
                 Authorization: `token ${ghToken}`,
@@ -140,8 +141,9 @@ function getSettings() {
 }
 
 async function loadEditor() {
+    let stringJson = null
     try {
-        const apiUrl = `${BASE_URL[ghHost]}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}`
+        const apiUrl = `${BASE_URL[ghHost]}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}?ref=${pathDetails.branch}`
         console.log('ghJsonEditor: loadEditor.apiUrl', apiUrl)
         const getFileRes = await fetch(apiUrl, {
             headers: {
@@ -151,10 +153,17 @@ async function loadEditor() {
         })
         const fileRes = await getFileRes.json()
         pathDetails.sha = fileRes.sha
-        json = JSON.parse(atob(fileRes?.content))
+        stringJson = atob(fileRes?.content)
+        json = JSON.parse(stringJson)
 
     } catch (error) {
-        json = {}
+        try {
+            stringJson = stringJson.replace(/(\r\n|\n|\r)/gm, "");
+            stringJson = 
+            json = stringJson
+        } catch (_error) {
+            json = {}
+        }
         Toastify({
             text: `Error: ${error.message} `,
             duration: 3000,
@@ -166,7 +175,7 @@ async function loadEditor() {
         mode: 'view',
     }
     const editorOptions = {
-        mode: 'tree',
+        mode: 'code',
         modes: ['code', 'form', 'text', 'tree', 'view', 'preview'], // allowed modes
         onModeChange: function (newMode, oldMode) {
             console.log('ghJsonEditor: Mode switched from', oldMode, 'to', newMode)
@@ -197,6 +206,7 @@ function init() {
     pathDetails = {
         org: splitPath[1],
         repo: splitPath[2],
+        branch: splitPath[4],
         filePath
     }
 

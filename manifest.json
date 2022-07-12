@@ -14,10 +14,10 @@
     "content_scripts": [
         {
             "matches": [
-                "http://*.github.com/*.json",
-                "https://*.github.com/*.json",
-                "http://*.github.ibm.com/*.json",
-                "https://*.github.ibm.com/*.json"
+                "http://*.github.com/*",
+                "https://*.github.com/*",
+                "http://*.github.ibm.com/*",
+                "https://*.github.ibm.com/*"
             ],
             "js": [
                 "insert.js"

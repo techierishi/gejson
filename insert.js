@@ -36,11 +36,16 @@
 
 
     const insertButton = () => {
-        const geJsonButton = document.getElementById('gejson-button')
-        if (geJsonButton) {
+        const pathName = document.location.pathname
+        if(pathName.indexOf('.json') === -1){
             return false
+        } else {
+            const geJsonButton = document.getElementById('gejson-button')
+            if (geJsonButton) {
+                return false
+            }
+            createGeJsonButton()
         }
-        createGeJsonButton()
     }
 
     insertButton()
