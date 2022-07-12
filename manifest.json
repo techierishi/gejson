@@ -1,13 +1,10 @@
 {
     "name": "Github JSON Editor",
-    "version": "1.1",
+    "version": "1.2",
     "description": "Github JSON Editor",
     "manifest_version": 3,
     "author": "Rishi",
-    "permissions": [
-        "tabs",
-        "scripting"
-    ],
+    "permissions": [],
     "background": {
         "service_worker": "background.js"
     },
