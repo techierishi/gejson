@@ -1,5 +1,8 @@
-const leftEditor = document.getElementById('editor')
-const rightViewer = document.getElementById('viewer')
+const Toastify = require('toastify-js')
+const JSONEditor = require('jsoneditor')
+const dJSON = require('dirty-json');
+require('./loader')
+
 const STORE_KEY = 'easy-json-editor'
 const BASE_URL = {
     "github.com": 'https://api.github.com/repos',
@@ -12,9 +15,6 @@ let pathDetails = {}
 let settings = {}
 let ghHost = 'github.com'
 let rawPath = null
-
-document.getElementById("saveSettings").addEventListener("click", saveSettings)
-document.getElementById("saveJSON").addEventListener("click", saveJSON)
 
 
 function saveSettings() {
@@ -157,10 +157,12 @@ async function loadEditor() {
         json = JSON.parse(stringJson)
 
     } catch (error) {
+
+        console.log('loadEditor.error', error);
+    
         try {
-            stringJson = stringJson.replace(/(\r\n|\n|\r)/gm, "");
-            stringJson = 
-            json = stringJson
+            // Try fixing the JSON
+            json= dJSON.parse(stringJson)
         } catch (_error) {
             json = {}
         }
@@ -171,6 +173,10 @@ async function loadEditor() {
             position: "right"
         }).showToast();
     }
+
+    const leftEditor = document.getElementById('editor')
+    const rightViewer = document.getElementById('viewer')
+
     const viewerOptions = {
         mode: 'view',
     }
@@ -209,6 +215,9 @@ function init() {
         branch: splitPath[4],
         filePath
     }
+
+    document.getElementById("saveSettings").addEventListener("click", saveSettings)
+    document.getElementById("saveJSON").addEventListener("click", saveJSON)
 
     loadEditor()
 }

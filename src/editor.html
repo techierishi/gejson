@@ -7,9 +7,7 @@
     <link href="./res/jsoneditor.min.css" rel="stylesheet" type="text/css">
     <link href="./res/toastify.min.css" rel="stylesheet" type="text/css">
     <link href="./res/style.css" rel="stylesheet" type="text/css">
-    
-    <script src="./res/jsoneditor.min.js"></script>
-    <script src="./res/toastify.min.js"></script>
+
 </head>
 
 <body>
@@ -31,7 +29,8 @@
                         <h3>Settings</h3>
                         <p>
                             <input type="text" id="ghToken" name="ghToken" placeholder="Github Token" required="" />
-                            <a href="https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token" target="_blank" rel="noopener noreferrer">How to create token?</a>
+                            <a href="https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
+                                target="_blank" rel="noopener noreferrer">How to create token?</a>
                         </p>
                         <p>
                             <input type="text" id="ghName" name="ghName" placeholder="User name" required="" />
@@ -52,10 +51,10 @@
 
 
         </div>
-        <loader-component id="editor-loader" > </loader-component>
-        
+        <loader-component id="editor-loader"> </loader-component>
+
         <div class="container">
-            
+
             <div id="editor" style="width:50%"></div>
             <div id="viewer" style="width:50%"></div>
         </div>
@@ -63,9 +62,6 @@
     </div>
 
     <script src="editor.js"></script>
-    <script src="loader.js"></script>
-
-    
 </body>
 
 </html>
