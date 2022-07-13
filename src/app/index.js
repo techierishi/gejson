@@ -11,10 +11,12 @@ const JSONEditor = require('jsoneditor')
 const dJSON = require('dirty-json')
 require('./loader')
 
+let jsonViewer = null
+let json = null
+
 const App = function (props) {
-    let jsonViewer = null
-    let json = null
-    
+
+
     const { pathDetails, settings } = props
     const [loader, showLoader] = useState(false)
 
@@ -66,8 +68,13 @@ const App = function (props) {
                 console.log('ghJsonEditor: Mode switched from', oldMode, 'to', newMode)
             },
             onChangeText: function (jsonString) {
-                localStorage.setItem(STORE_KEY, jsonString)
-                jsonViewer.updateText(jsonString)
+                try {
+                    localStorage.setItem(STORE_KEY, jsonString)
+                    jsonViewer.updateText(jsonString)
+                } catch (err) {
+                    console.log('onChangeText.error', err)
+                }
+
             }
         }
         new JSONEditor(leftEditor, editorOptions, json)
@@ -130,7 +137,7 @@ const App = function (props) {
 
     }, [])
 
-    const showSettingsModal = () => { 
+    const showSettingsModal = () => {
         const $trigger = document.querySelector('.js-modal-trigger')
         const modal = $trigger.dataset.target
         const $target = document.getElementById(modal)
@@ -151,7 +158,8 @@ const App = function (props) {
             <div class="header">
                 <div class="action">
             
-                    <label class="button is-primary js-modal-trigger" data-target="modal-settings" onclick=${showSettingsModal} > Settings</label>
+                    <label class="button is-primary js-modal-trigger" data-target="modal-settings" onclick=${showSettingsModal}>
+                        Settings</label>
                     <label class="button is-primary ml-3" onclick=${saveJSON}>Save</label>
                 </div>
             
