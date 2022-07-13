@@ -1,19 +1,21 @@
 
-import { html } from 'htm/preact';
-import { useEffect, useState } from 'preact/hooks';
+import { html } from 'htm/preact'
+import { useEffect, useState } from 'preact/hooks'
 import { Modal } from './modal'
 import { STORE_KEY, BASE_URL } from '../util/config'
-import { getSettings } from '../util'
+
+import '../res/style.css'
+
 const Toastify = require('toastify-js')
 const JSONEditor = require('jsoneditor')
-const dJSON = require('dirty-json');
+const dJSON = require('dirty-json')
 require('./loader')
 
 const App = function (props) {
     let jsonViewer = null
-    const { pathDetails } = props;
-    const [settings, setSettings] = useState(null)
-    const [json, setJson] = useState(null)
+    let json = null
+    
+    const { pathDetails, settings } = props
     const [loader, showLoader] = useState(false)
 
     const loadEditor = async () => {
@@ -32,23 +34,23 @@ const App = function (props) {
             showLoader(false)
             pathDetails.sha = fileRes.sha
             stringJson = atob(fileRes?.content)
-            setJson(JSON.parse(stringJson))
+            json = JSON.parse(stringJson)
 
         } catch (error) {
             showLoader(false)
-            console.log('loadEditor.error', error);
+            console.log('loadEditor.error', error)
             try {
                 // Try fixing the JSON
-                setJson(dJSON.parse(stringJson))
+                json = dJSON.parse(stringJson)
             } catch (_error) {
-                setJson({})
+                json = {}
             }
             Toastify({
                 text: `Error: ${error.message} `,
                 duration: 3000,
                 gravity: "bottom",
                 position: "right"
-            }).showToast();
+            }).showToast()
         }
 
         const leftEditor = document.getElementById('editor')
@@ -70,21 +72,16 @@ const App = function (props) {
         }
         new JSONEditor(leftEditor, editorOptions, json)
         jsonViewer = new JSONEditor(rightViewer, viewerOptions, json)
-
-        document.getElementById('editor-loader').remove()
     }
-
 
     const saveJSON = async () => {
         console.log("ghJsonEditor: Saving JSON...")
-        getSettings()
-
         Toastify({
             text: "Saving...",
             duration: 3000,
             gravity: "bottom",
             position: "right"
-        }).showToast();
+        }).showToast()
 
         const { ghToken, ghName, ghEmail, ghCommitMessage } = settings
 
@@ -92,7 +89,7 @@ const App = function (props) {
         const b64Data = btoa(JSON.stringify(jsonToSave, null, 2))
 
         try {
-            const apiUrl = `${BASE_URL[pathDetails.ghHost]}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}`;
+            const apiUrl = `${BASE_URL[pathDetails.ghHost]}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}`
             console.log('ghJsonEditor: saveJSON.apiUrl', apiUrl)
             await fetch(apiUrl, {
                 body: `{ 
@@ -108,14 +105,14 @@ const App = function (props) {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 method: "PUT"
-            });
+            })
 
             Toastify({
                 text: "Saved...",
                 duration: 3000,
                 gravity: "bottom",
                 position: "right"
-            }).showToast();
+            }).showToast()
 
         } catch (error) {
             Toastify({
@@ -123,24 +120,24 @@ const App = function (props) {
                 duration: 3000,
                 gravity: "bottom",
                 position: "right"
-            }).showToast();
+            }).showToast()
         }
 
     }
 
     useEffect(() => {
-        const settings = getSettings();
-        setSettings(settings);
         loadEditor()
 
     }, [])
 
-    const showSettingsModal = () => {
-        MicroModal.show('modal-settings');
+    const showSettingsModal = () => { 
+        const $trigger = document.querySelector('.js-modal-trigger')
+        const modal = $trigger.dataset.target
+        const $target = document.getElementById(modal)
+        $target.classList.add('is-active')
     }
-    const renderModal = () => {
-        console.log('renderModal settings', settings);
 
+    const renderModal = () => {
         return settings && html`<${Modal} settings=${settings} />`
     }
 
@@ -153,17 +150,20 @@ const App = function (props) {
     return html`
             <div class="header">
                 <div class="action">
-                    <label class="btn" onclick=${showSettingsModal}>Settings</label>
-                    <label class="btn" onclick=${saveJSON}>Save</label>
+            
+                    <label class="button is-primary js-modal-trigger" data-target="modal-settings" onclick=${showSettingsModal} > Settings</label>
+                    <label class="button is-primary ml-3" onclick=${saveJSON}>Save</label>
                 </div>
-                <div class="modal">
-                    ${renderModal()}
-                </div>
+            
             </div>
             ${renderLoader()}
-            <div class="container">
+            <div class="editor-container">
                 <div id="editor" style="width:50%"></div>
                 <div id="viewer" style="width:50%"></div>
+            </div>
+            
+            <div class="popups">
+                ${renderModal()}
             </div>`
 }
 

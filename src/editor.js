@@ -1,7 +1,6 @@
 import { html, render } from 'htm/preact';
+import { getSettings } from './util';
 const { App } = require('./app')
-import MicroModal from 'micromodal';
-
 
 function init() {
     let params = (new URL(document.location)).searchParams
@@ -20,11 +19,9 @@ function init() {
         rawPath,
         ghHost
     }
+    const settings = getSettings()
 
-    render(html`<${App} pathDetails=${pathDetails} />`, document.querySelector('.app'));
-
-    MicroModal.init();
-
+    render(html`<${App} pathDetails=${pathDetails} settings=${settings} />`, document.querySelector('.app'));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
