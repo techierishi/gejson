@@ -1,13 +1,11 @@
 
-import { html } from 'htm/preact';
-import { useEffect } from 'preact/hooks';
+import { html } from 'htm/preact'
+import { useEffect } from 'preact/hooks'
 const Toastify = require('toastify-js')
 
 const Modal = function (props) {
 
     const { settings } = props
-
-    console.log('Modal settings', settings);
 
     const fillSettings = (settings) => {
         const { ghToken, ghName, ghEmail, ghCommitMessage } = settings
@@ -54,47 +52,67 @@ const Modal = function (props) {
             duration: 3000,
             gravity: "bottom",
             position: "right"
-        }).showToast();
+        }).showToast()
 
         setTimeout(() => {
-            window.location.reload();
-        }, 1000);
+            window.location.reload()
+        }, 1000)
 
+    }
+
+    const closeModal = () => {
+        document.querySelector('.modal').classList.remove('is-active');
     }
 
     useEffect(() => {
         fillSettings(settings)
-    });
+    })
 
-    return html` 
-    <div class="micromodal-slide modal" id="modal-settings" aria-hidden="false">
-    <div class="modal__overlay" tabindex="-1" data-custom-close="">
-        <div class="modal__container w-40-ns w-90" role="dialog" aria-modal="true" aria-labelledby="modal-2-title">
-            <header class="modal__header">
-                <h3 class="modal__title" id="modal-2-title"> 🔒 Login </h3> <button class="modal__close"
-                    aria-label="Close modal" data-custom-close=""></button>
+    return html`
+    <div class="modal" id="modal-settings">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Modal title</p>
+                <button class="delete" aria-label="close" onclick=${closeModal}></button>
             </header>
-            <p>
-                <input type="text" id="ghToken" name="ghToken" placeholder="Github Token" required="" />
-                <a href="https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-                    target="_blank" rel="noopener noreferrer">How to create token?</a>
-            </p>
-            <p>
-                <input type="text" id="ghName" name="ghName" placeholder="User name" required="" />
-            </p>
-            <p>
-                <input type="text" id="ghEmail" name="ghEmail" placeholder="User email" required="" />
-            </p>
-            <p>
-                <input type="text" id="ghCommitMessage" name="ghCommitMessage" placeholder="Commit message"
-                    required="" />
-            </p>
-            <p>
-                <button class="btn" onclick=${saveSettings}> Save </button>
-            </p>
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Token</label>
+                    <div class="control">
+                        <input class="input" id="ghToken" type="password" placeholder="Gihub Token" />
+                    </div>
+                    <a href="https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
+                        target="_blank" rel="noopener noreferrer">How to create token?</a>
+                </div>
+                <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                        <input class="input" id="ghName" type="text" placeholder="Name" />
+                    </div>
+                </div>
+    
+                <div class="field">
+                    <label class="label">Email</label>
+                    <div class="control">
+                        <input class="input" id="ghEmail" type="text" placeholder="Email" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Commit Message</label>
+                    <div class="control">
+                        <input class="input" id="ghCommitMessage" type="text" placeholder="Commit Message" />
+                    </div>
+                </div>
+    
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-success" onclick=${saveSettings}>Save changes</button>
+                <button class="button">Cancel</button>
+            </footer>
         </div>
     </div>
-</div>`
+`
 
 }
 
