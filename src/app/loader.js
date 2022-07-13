@@ -18,10 +18,10 @@ class LoaderComponent extends HTMLElement {
             </div>
         `;
     }
-  
+
     disconnectedCallback() {
         console.log("ghJsonEditor: loader-component is leaving");
     }
-  }
-  
-  customElements.define('loader-component', LoaderComponent);
+}
+
+customElements.define('loader-component', LoaderComponent);

@@ -11,7 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "dirty-json": "^0.9.2",
+    "htm": "^3.1.1",
     "jsoneditor": "^9.9.0",
+    "micromodal": "^0.4.10",
+    "preact": "^10.10.0",
     "toastify-js": "^1.11.2"
   },
   "devDependencies": {
