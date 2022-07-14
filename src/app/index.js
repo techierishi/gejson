@@ -32,7 +32,7 @@ const App = function (props) {
         const fileRes = await getFileRes.json()
         pathDetails.sha = fileRes.sha
         const stringJson = atob(fileRes?.content)
-        json = JSON.parse(stringJson)
+        return stringJson;
     }
 
     const loadEditor = async () => {
@@ -40,7 +40,8 @@ const App = function (props) {
         try {
             showLoader(true)
             if (checkSettings(settings)){
-                await fillJson()
+                stringJson = await fillJson()
+                json = JSON.parse(stringJson)
             }
             showLoader(false)
         } catch (error) {

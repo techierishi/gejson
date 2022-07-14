@@ -50,7 +50,15 @@ svg {
     display: inline-block;
 }
 
-.loader {
+.svg-loader {
     display: flex;
     justify-content: center;
+}
+
+.editor-container .jsoneditor {
+    border-radius: 0 0 8px 8px;
+}
+
+.editor-container .jsoneditor-tree {
+    border-radius: 0 0 8px 8px;
 }
