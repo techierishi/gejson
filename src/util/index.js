@@ -1,13 +1,12 @@
 const Toastify = require('toastify-js')
 
-function getSettings() {
-    const ghToken = localStorage.getItem("ghToken")
-    const ghName = localStorage.getItem("ghName")
-    const ghEmail = localStorage.getItem("ghEmail")
-    const ghCommitMessage = localStorage.getItem("ghCommitMessage") || 'Commit from chrome extension!'
-    const settings = { ghToken, ghName, ghEmail, ghCommitMessage }
-
-    if (!(ghToken && ghName && ghEmail)) {
+function checkSettings(settings){
+    return (settings?.ghToken && settings?.ghName && settings?.ghEmail)
+}
+function getSettings(domain) {
+    const settings = JSON.parse(localStorage.getItem(domain))
+    console.log('gjEdior:: getSettings', settings)
+    if (!checkSettings(settings)) {
         Toastify({
             text: "Error: Please save settings...",
             duration: 3000,
@@ -15,11 +14,10 @@ function getSettings() {
             position: "right"
         }).showToast();
     }
-
     return settings
 }
 
-
 export {
+    checkSettings,
     getSettings
 }
