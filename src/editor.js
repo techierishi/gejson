@@ -7,7 +7,7 @@ function init() {
     const rawPath = params.get("rawPath")
     const ghHost = params.get("ghHost")
 
-    console.log('ghJsonEditor: rawPath, ghHost', rawPath, ghHost)
+    console.log('gjEdior::1 rawPath, ghHost', rawPath, ghHost)
     let splitPath = rawPath.split('/');
     const filePathArr = splitPath.slice(5, splitPath.length + 1)
     const filePath = filePathArr.join('/')
@@ -19,7 +19,7 @@ function init() {
         rawPath,
         ghHost
     }
-    const settings = getSettings()
+    const settings = getSettings(ghHost)
 
     render(html`<${App} pathDetails=${pathDetails} settings=${settings} />`, document.querySelector('.app'));
 }

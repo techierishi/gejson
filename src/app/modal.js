@@ -3,12 +3,13 @@ import { html } from 'htm/preact'
 import { useEffect } from 'preact/hooks'
 const Toastify = require('toastify-js')
 
+/* This code in transition phase from Vanilla JS to VDom */
 const Modal = function (props) {
 
-    const { settings } = props
+    const { settings, pathDetails } = props
 
     const fillSettings = (settings) => {
-        const { ghToken, ghName, ghEmail, ghCommitMessage } = settings
+        const { ghToken, ghName, ghEmail, ghCommitMessage } = settings || {}
         if (ghToken) {
             const ghTokenEl = document.getElementById("ghToken")
             ghTokenEl.value = ghToken
@@ -26,26 +27,27 @@ const Modal = function (props) {
 
         if (ghCommitMessage) {
             const ghCommitMessageEl = document.getElementById("ghCommitMessage")
-            ghCommitMessageEl.value = ghCommitMessage
+            ghCommitMessageEl.value = ghCommitMessage || 'Commit from Github JSON editor!'
         }
     }
 
     const saveSettings = () => {
+        const { ghHost } = pathDetails
         const ghTokenEl = document.getElementById("ghToken")
-        const ghTokenVal = ghTokenEl.value
-        localStorage.setItem("ghToken", ghTokenVal)
+        const ghToken = ghTokenEl.value
 
         const ghNameEl = document.getElementById("ghName")
-        const ghNameVal = ghNameEl.value
-        localStorage.setItem("ghName", ghNameVal)
+        const ghName = ghNameEl.value
 
         const ghEmailEl = document.getElementById("ghEmail")
-        const ghEmailVal = ghEmailEl.value
-        localStorage.setItem("ghEmail", ghEmailVal)
+        const ghEmail = ghEmailEl.value
 
         const ghCommitMessageEl = document.getElementById("ghCommitMessage")
-        const ghCommitMessageVal = ghCommitMessageEl.value
-        localStorage.setItem("ghCommitMessage", ghCommitMessageVal)
+        const ghCommitMessage = ghCommitMessageEl.value
+
+        const settings = { ghToken, ghName, ghEmail, ghCommitMessage }
+
+        localStorage.setItem(ghHost, JSON.stringify(settings))
 
         Toastify({
             text: "Settings Saved...",
@@ -77,10 +79,15 @@ const Modal = function (props) {
                 <button class="delete" aria-label="close" onclick=${closeModal}></button>
             </header>
             <section class="modal-card-body">
+    
                 <div class="field">
                     <label class="label">Token</label>
-                    <div class="control">
+                    <div class="control has-icons-right">
                         <input class="input" id="ghToken" type="password" placeholder="Gihub Token" />
+    
+                        <span class="icon is-right">
+                            <i class="fas fa-check"></i>
+                        </span>
                     </div>
                     <a href="https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
                         target="_blank" rel="noopener noreferrer">How to create token?</a>
@@ -108,7 +115,6 @@ const Modal = function (props) {
             </section>
             <footer class="modal-card-foot">
                 <button class="button is-success" onclick=${saveSettings}>Save changes</button>
-                <button class="button">Cancel</button>
             </footer>
         </div>
     </div>

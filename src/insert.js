@@ -18,7 +18,7 @@
                 ?.getElementById('raw-url')
                 ?.getAttribute('href')
             const ghHost = location.host;
-            console.log('ghJsonEditor: rawPath, ghHost', rawPath, ghHost)
+            console.log('gjEdior::0 rawPath, ghHost', rawPath, ghHost)
 
             if (rawPath) {
                 chrome.runtime.sendMessage({

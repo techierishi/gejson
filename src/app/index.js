@@ -5,6 +5,7 @@ import { Modal } from './modal'
 import { STORE_KEY, BASE_URL } from '../util/config'
 
 import '../res/style.css'
+import { checkSettings } from '../util'
 
 const Toastify = require('toastify-js')
 const JSONEditor = require('jsoneditor')
@@ -20,27 +21,31 @@ const App = function (props) {
     const { pathDetails, settings } = props
     const [loader, showLoader] = useState(false)
 
+    const fillJson = async () => {
+        const apiUrl = `${BASE_URL[pathDetails.ghHost]}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}?ref=${pathDetails.branch}`
+        const getFileRes = await fetch(apiUrl, {
+            headers: {
+                Accept: "application/vnd.github+json",
+                Authorization: `token ${settings?.ghToken}`
+            }
+        })
+        const fileRes = await getFileRes.json()
+        pathDetails.sha = fileRes.sha
+        const stringJson = atob(fileRes?.content)
+        json = JSON.parse(stringJson)
+    }
+
     const loadEditor = async () => {
         let stringJson = null
         try {
             showLoader(true)
-            const apiUrl = `${BASE_URL[pathDetails.ghHost]}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}?ref=${pathDetails.branch}`
-            console.log('ghJsonEditor: loadEditor.apiUrl', apiUrl)
-            const getFileRes = await fetch(apiUrl, {
-                headers: {
-                    Accept: "application/vnd.github+json",
-                    Authorization: `token ${settings?.ghToken}`
-                }
-            })
-            const fileRes = await getFileRes.json()
+            if (checkSettings(settings)){
+                await fillJson()
+            }
             showLoader(false)
-            pathDetails.sha = fileRes.sha
-            stringJson = atob(fileRes?.content)
-            json = JSON.parse(stringJson)
-
         } catch (error) {
             showLoader(false)
-            console.log('loadEditor.error', error)
+            console.log('gjEdior:: loadEditor.error', error)
             try {
                 // Try fixing the JSON
                 json = dJSON.parse(stringJson)
@@ -62,17 +67,17 @@ const App = function (props) {
             mode: 'view',
         }
         const editorOptions = {
-            mode: 'code',
+            mode: 'tree',
             modes: ['code', 'form', 'text', 'tree', 'view', 'preview'], // allowed modes
             onModeChange: function (newMode, oldMode) {
-                console.log('ghJsonEditor: Mode switched from', oldMode, 'to', newMode)
+                console.log('gjEdior:: Mode switched from', oldMode, 'to', newMode)
             },
             onChangeText: function (jsonString) {
                 try {
                     localStorage.setItem(STORE_KEY, jsonString)
                     jsonViewer.updateText(jsonString)
                 } catch (err) {
-                    console.log('onChangeText.error', err)
+                    console.log('gjEdior:: onChangeText.error', err)
                 }
 
             }
@@ -82,7 +87,6 @@ const App = function (props) {
     }
 
     const saveJSON = async () => {
-        console.log("ghJsonEditor: Saving JSON...")
         Toastify({
             text: "Saving...",
             duration: 3000,
@@ -97,7 +101,6 @@ const App = function (props) {
 
         try {
             const apiUrl = `${BASE_URL[pathDetails.ghHost]}/${pathDetails.org}/${pathDetails.repo}/contents/${pathDetails.filePath}`
-            console.log('ghJsonEditor: saveJSON.apiUrl', apiUrl)
             await fetch(apiUrl, {
                 body: `{ 
                 "message": "${ghCommitMessage}", 
@@ -132,9 +135,8 @@ const App = function (props) {
 
     }
 
-    useEffect(() => {
-        loadEditor()
-
+    useEffect(async () => {
+        await loadEditor()
     }, [])
 
     const showSettingsModal = () => {
@@ -145,7 +147,7 @@ const App = function (props) {
     }
 
     const renderModal = () => {
-        return settings && html`<${Modal} settings=${settings} />`
+        return html`<${Modal} settings=${settings} pathDetails=${pathDetails} />`
     }
 
     const renderLoader = () => {
